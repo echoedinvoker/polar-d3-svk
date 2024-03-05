@@ -5,57 +5,41 @@
   let polar: Polar | null = null;
   let name: string = "";
   let orders: number = 0;
-  let config = JSON.stringify(
-    {
-      fields: {
-        id: "name",
-        name: "name",
-        value: "orders",
-      },
-      selector: ".canvas",
-      svg: { width: 600, height: 600 },
-      margin: { top: 100, right: 20, bottom: 20, left: 100 },
-      radial: {
-        length: 300,
-        strokeWidth: 1,
-        text: {
-          size: 16,
-          family: "Arial",
-          color: "black",
-          strokeDasharray: "5,5",
-        },
-      },
-      x: {
-        text: {
-          size: 16,
-          family: "Arial",
-          color: "black",
-        },
-      },
-      arc: {
-        radius: 250,
-        range: [270, 330, 360],
-        strokeWidth: 0.5,
-        text: {
-          size: 16,
-          family: "Arial",
-          color: "black",
-        },
-      },
-      eventHandler: {
-        event: "click",
-        handler: (d: any) => console.log(d),
-      },
-      animation: {
-        duration: 750,
-      },
-    },
-    null,
-    2,
-  );
+  let config: string = "";
 
   onMount(() => {
-    polar = new Polar(JSON.parse(config));
+    const initConfig = {
+      fieldsId: "name",
+      fieldsName: "name",
+      fieldsValue: "orders",
+      selector: ".canvas",
+      svgWidth: 600,
+      svgHeight: 600,
+      marginTop: 100,
+      marginRight: 20,
+      marginBottom: 20,
+      marginLeft: 100,
+      radialLength: 300,
+      radialStrokeWidth: 1,
+      radialTextSize: 16,
+      radialTextFamily: "Arial",
+      radialTextColor: "black",
+      radialTextStrokeDasharray: "5,5",
+      xTextSize: 16,
+      xTextFamily: "Arial",
+      xTextColor: "black",
+      arcRadius: 250,
+      arcRange: [270, 330, 360],
+      arcStrokeWidth: 0.5,
+      arcTextSize: 16,
+      arcTextFamily: "Arial",
+      arcTextColor: "black",
+      eventHandlerEvent: "click",
+      eventHandlerHandler: (d: any) => console.log(d),
+      animationDuration: 750,
+    };
+    config = JSON.stringify(initConfig, null, 2);
+    polar = new Polar(initConfig);
   });
 </script>
 
@@ -85,7 +69,7 @@
           on:click={() => {
             const canvas = document.querySelector(JSON.parse(config).selector);
             canvas && canvas.innerHTML && (canvas.innerHTML = "");
-            polar = new Polar(JSON.parse(config));
+            polar?.changeConfig(JSON.parse(config));
           }}>UPDATE</button
         >
         <br />
@@ -114,8 +98,13 @@
     display: flex;
     flex-direction: row;
     align-items: flex-start;
+    gap: 40px;
   }
   .row {
     width: 50%;
+  }
+  .canvas :global(svg) {
+    margin-top: 37px;
+    border: 1px solid gray;
   }
 </style>
