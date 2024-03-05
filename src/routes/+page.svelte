@@ -35,7 +35,8 @@
       arcTextFamily: "Arial",
       arcTextColor: "black",
       eventHandlerEvent: "click",
-      eventHandlerHandler: (d: any) => console.log(d),
+      eventHandlerHandler: (d: any) =>
+        polar?.update([{ type: "removed", name: d.name }]),
       animationDuration: 750,
     };
     config = JSON.stringify(initConfig, null, 2);
@@ -77,7 +78,7 @@
         <textarea
           bind:value={config}
           style="width: 100%; height: 100%;"
-          rows="50"
+          rows="40"
         ></textarea>
       </div>
       <div class="row">
@@ -97,14 +98,13 @@
   .f-row {
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
     gap: 40px;
   }
   .row {
     width: 50%;
   }
   .canvas :global(svg) {
-    margin-top: 37px;
     border: 1px solid gray;
   }
 </style>
