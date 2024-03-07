@@ -6,6 +6,15 @@
   let name: string = "";
   let orders: number = 0;
   let config: string = "";
+  let dataEl: HTMLTextAreaElement | null = null;
+  let value: { name: string; value: number }[] = [];
+
+  function save() {
+    console.log(dataEl?.value);
+    value = JSON.parse(dataEl?.value || "[]");
+    polar.itemModel.new = value;
+    value = Array.from(polar.itemModel.new);
+  }
 
   onMount(() => {
     const initConfig = {
@@ -31,6 +40,7 @@
       arcRadius: 250,
       arcRange: [270, 330, 360],
       arcStrokeWidth: 0.5,
+      arcFillOpacity: 0.8,
       arcTextSize: 16,
       arcTextFamily: "Arial",
       arcTextColor: "black",
@@ -41,6 +51,12 @@
     };
     config = JSON.stringify(initConfig, null, 2);
     polar = new Polar(initConfig);
+    polar.itemModel.new = [
+      { name: "A", value: 10 },
+      { name: "B", value: 20 },
+      { name: "C", value: 30 },
+    ];
+    value = Array.from(polar.itemModel.new);
   });
 </script>
 
@@ -80,6 +96,26 @@
           style="width: 100%; height: 100%;"
           rows="40"
         ></textarea>
+      </div>
+      <div class="row">
+        <div class="data">
+          <div class="f-col">
+            <div class="col">
+              <button
+                on:click={() => {
+                  save();
+                }}>Save</button
+              >
+            </div>
+            <div class="col">
+              <textarea
+                bind:this={dataEl}
+                value={JSON.stringify(value, null, 2)}
+                rows="40"
+              ></textarea>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="row">
         <div class="canvas"></div>
