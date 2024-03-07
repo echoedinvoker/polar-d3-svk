@@ -10,7 +10,6 @@
   let value: { name: string; value: number }[] = [];
 
   function save() {
-    console.log(dataEl?.value);
     value = JSON.parse(dataEl?.value || "[]");
     polar.itemModel.new = value;
     value = Array.from(polar.itemModel.new);
@@ -45,8 +44,10 @@
       arcTextFamily: "Arial",
       arcTextColor: "black",
       eventHandlerEvent: "click",
-      eventHandlerHandler: (d: any) =>
-        polar?.update([{ type: "removed", name: d.name }]),
+      eventHandlerHandler: (d: any) => {
+        polar?.update([{ type: "removed", name: d.name }]);
+        value = Array.from(polar.itemModel.new);
+      },
       animationDuration: 750,
     };
     config = JSON.stringify(initConfig, null, 2);
