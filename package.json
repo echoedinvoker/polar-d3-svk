@@ -1,6 +1,6 @@
 {
   "name": "polar-d3-svk",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "private": true,
   "scripts": {
     "dev": "vite dev",
@@ -24,6 +24,6 @@
   "dependencies": {
     "@types/d3": "^7.4.3",
     "d3": "^7.8.5",
-    "polar-d3": "^3.0.12"
+    "polar-d3": "^3.1.0"
   }
 }

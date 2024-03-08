@@ -14,6 +14,24 @@
     polar.itemModel.new = value;
     value = Array.from(polar.itemModel.new);
   }
+  function addAndUpdate() {
+    if (polar && name in polar.itemModel.getNames) {
+      polar.update([{ type: "updated", name: name, orders: orders }]);
+      return;
+    } else {
+      polar && polar.update([{ type: "added", name: name, orders: orders }]);
+    }
+    value = Array.from(polar.itemModel.new);
+  }
+  function remove() {
+    polar && polar.update([{ type: "removed", name: name }]);
+    value = Array.from(polar.itemModel.new);
+  }
+  function updateConfig() {
+    const canvas = document.querySelector(JSON.parse(config).selector);
+    canvas && canvas.innerHTML && (canvas.innerHTML = "");
+    polar?.changeConfig(JSON.parse(config));
+  }
 
   onMount(() => {
     const initConfig = {
@@ -63,36 +81,10 @@
 
 <div class="f-col">
   <div class="col">
-    <input type="text" bind:value={name} />
-    <input type="number" bind:value={orders} />
-    <button
-      on:click={() => {
-        if (polar && name in polar.itemModel.getNames) {
-          polar.update([{ type: "updated", name: name, orders: orders }]);
-          return;
-        }
-        polar && polar.update([{ type: "added", name: name, orders: orders }]);
-      }}>ADD/UPDATE</button
-    >
-    <button
-      on:click={() => {
-        polar && polar.update([{ type: "removed", name: name }]);
-      }}>DELETE</button
-    >
-  </div>
-  <div class="col">
     <div class="f-row">
       <div class="row">
-        <button
-          on:click={() => {
-            const canvas = document.querySelector(JSON.parse(config).selector);
-            canvas && canvas.innerHTML && (canvas.innerHTML = "");
-            polar?.changeConfig(JSON.parse(config));
-          }}>UPDATE</button
-        >
-        <br />
-        <br />
         <textarea
+          on:blur={updateConfig}
           bind:value={config}
           style="width: 100%; height: 100%;"
           rows="40"
@@ -102,14 +94,8 @@
         <div class="data">
           <div class="f-col">
             <div class="col">
-              <button
-                on:click={() => {
-                  save();
-                }}>Save</button
-              >
-            </div>
-            <div class="col">
               <textarea
+                on:blur={save}
                 bind:this={dataEl}
                 value={JSON.stringify(value, null, 2)}
                 rows="40"
@@ -118,8 +104,18 @@
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="canvas"></div>
+      <div class="row last">
+        <div class="f-col">
+          <div class="col">
+            <input type="text" bind:value={name} />
+            <input type="number" bind:value={orders} />
+            <button on:click={addAndUpdate}>ADD/UPDATE</button>
+            <button on:click={remove}>DELETE</button>
+          </div>
+          <div class="col">
+            <div class="canvas"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -141,7 +137,10 @@
   .row {
     width: 50%;
   }
-  .canvas :global(svg) {
-    border: 1px solid gray;
+  input {
+    width: 100px;
+  }
+  .last {
+    margin-left: 10px;
   }
 </style>
