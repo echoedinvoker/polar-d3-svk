@@ -1,0 +1,174 @@
+<script lang="ts">
+  import { select } from "d3";
+  import { Polar } from "polar-d3";
+  import { onMount } from "svelte";
+
+  let polar: Polar | null = null;
+  let name: string = "";
+  let orders: number = 0;
+  let config: string = "";
+  let dataEl: HTMLTextAreaElement | null = null;
+  let value: { name: string; value: number }[] = [
+    { name: "A", value: 10 },
+    { name: "B", value: 20 },
+    { name: "C", value: 30 },
+  ];
+  let svg: SVGSVGElement | null = null;
+  $: svgWdith = svg?.clientWidth;
+  $: groupTranslateValue = svgWdith
+    ? svgWdith / 2 - polar?.config.radialLength!
+    : 0;
+  $: groupTranslateValueX = groupTranslateValue + polar?.config.xOffSet!;
+  $: groupTranslateValueY = groupTranslateValue - polar?.config.yOffSet!;
+  let previousGroup: SVGGElement | null = null;
+  let group: SVGGElement | null = null;
+  $: if (group !== null && previousGroup === null) {
+    polar = new Polar(select(group) as any);
+    polar.itemModel.new = value;
+    previousGroup = group;
+  }
+
+  function save() {
+    if (!polar) return;
+    value = JSON.parse(dataEl?.value || "[]");
+    polar.itemModel.new = value;
+    value = Array.from(polar.itemModel.new);
+  }
+  function addAndUpdate() {
+    if (!polar) return;
+    if (polar && name in polar.itemModel.getNames) {
+      polar.update([{ type: "updated", name: name, orders: orders }]);
+      return;
+    } else {
+      polar && polar.update([{ type: "added", name: name, orders: orders }]);
+    }
+    value = Array.from(polar.itemModel.new);
+  }
+  function remove() {
+    if (!polar) return;
+    polar && polar.update([{ type: "removed", name: name }]);
+    value = Array.from(polar.itemModel.new);
+  }
+  function updateConfig() {
+    if (polar && config) {
+      polar.newConfig = JSON.parse(config);
+    }
+  }
+
+  onMount(() => {
+    const initConfig = {
+      fieldsId: "name",
+      fieldsName: "name",
+      fieldsValue: "orders",
+      selector: ".canvas",
+      xOffSet: 0,
+      yOffSet: 0,
+      radialLength: 300,
+      radialStrokeWidth: 1,
+      radialStrokeColor: "black",
+      radialTextSize: 16,
+      radialTextFamily: "Arial",
+      radialTextColor: "black",
+      radialTextStrokeDasharray: "5,5",
+      xTextSize: 16,
+      xTextFamily: "Arial",
+      xTextColor: "black",
+      arcRadius: 250,
+      arcRange: [270, 330, 360],
+      arcStrokeWidth: 0.5,
+      arcStrokeColor: "black",
+      arcFillOpacity: 0.8,
+      arcTextSize: 16,
+      arcTextFamily: "Arial",
+      arcTextColor: "black",
+      eventHandlerEvent: "click",
+      eventHandlerHandler: (d: any) => {
+        if (!polar) return;
+        polar?.update([{ type: "removed", name: d.name }]);
+        value = Array.from(polar.itemModel.new);
+      },
+      animationDuration: 750,
+    };
+    config = JSON.stringify(initConfig, null, 2);
+    // polar = new Polar(select(group));
+    // polar.itemModel.new = [
+    //   { name: "A", value: 10 },
+    //   { name: "B", value: 20 },
+    //   { name: "C", value: 30 },
+    // ];
+    // value = Array.from(polar.itemModel.new);
+  });
+</script>
+
+<div class="f-col">
+  <div class="col">
+    <div class="f-row">
+      <div class="row">
+        <textarea
+          on:blur={updateConfig}
+          bind:value={config}
+          style="width: 100%; height: 100%;"
+          rows="40"
+        ></textarea>
+      </div>
+      <div class="row">
+        <div class="data">
+          <div class="f-col">
+            <div class="col">
+              <textarea
+                on:blur={save}
+                bind:this={dataEl}
+                value={JSON.stringify(value, null, 2)}
+                rows="40"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row last">
+        <div class="f-col">
+          <div class="col">
+            <input type="text" bind:value={name} />
+            <input type="number" bind:value={orders} />
+            <button on:click={addAndUpdate}>ADD/UPDATE</button>
+            <button on:click={remove}>DELETE</button>
+          </div>
+          <div class="col">
+            <svg bind:this={svg} width="500" height="500">
+              <g
+                class="g-polar"
+                style="transform: translate({groupTranslateValueX}px, {groupTranslateValueY}px)"
+                bind:this={group}
+              >
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style lang="scss">
+  .f-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .f-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 40px;
+  }
+  .row {
+    width: 50%;
+  }
+  input {
+    width: 100px;
+  }
+  .last {
+    margin-left: 10px;
+  }
+</style>
