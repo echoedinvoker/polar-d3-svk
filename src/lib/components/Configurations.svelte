@@ -35,7 +35,7 @@
       on:change={(e) => setPolarConfig(e, "radialLength")}
       value={$polar.config.radialLength}
     />
-    <label for="n">Radial Length</label>
+    <label class="active" for="n">Radial Length</label>
   </div>
   <div class="input-field">
     <input
@@ -44,7 +44,7 @@
       on:change={(e) => setPolarConfig(e, "arcRadius")}
       value={$polar.config.arcRadius}
     />
-    <label for="r">Arc Radius</label>
+    <label class="active" for="r">Arc Radius</label>
   </div>
   <div class="input-field">
     <input
@@ -53,6 +53,6 @@
       on:change={(e) => setPolarConfig(e, "arcRange")}
       value={$polar.config.arcRange}
     />
-    <label for="a">Angle</label>
+    <label class="active" for="a">Angle</label>
   </div>
 {/if}
